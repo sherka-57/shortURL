@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>URL Shortener</h1>
+            <p>Shorten your long URLs instantly</p>
+        </div>
+
+        <!-- Input Box -->
+        <div class="input-box">
+            <input 
+                type="text" 
+                id="urlInput" 
+                class="url-input" 
+                placeholder="Paste your long URL here..."
+                autocomplete="off"
+            >
+            <button id="shortenBtn" class="shorten-btn">Shorten</button>
+        </div>
+
+        <!-- Result Box (hidden by default) -->
+        <div id="resultBox" class="result-box"><!--Add hidden class back-->
+            <div class="result-content">
+                <p class="result-label">Your shortened URL:</p>
+                <div class="result-url-container">
+                    <input 
+                        type="text" 
+                        id="shortenedUrl" 
+                        class="shortened-url" 
+                        readonly
+                    >
+                    <button id="copyBtn" class="copy-btn">Copy</button>
+                </div>
+                <p class="copy-feedback" id="copyFeedback"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
