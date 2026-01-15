@@ -1,8 +1,12 @@
 [build]
-    functions = "netlify/functions"
-    publish = "public"
+  publish = "public"
+  functions = "netlify/functions"
+    
 
 [[redirects]]
   from = "/r/:code"
   to = "/.netlify/functions/redirect/:code"
   status = 200
+
+[functions] 
+  node_bundler = "esbuild"
