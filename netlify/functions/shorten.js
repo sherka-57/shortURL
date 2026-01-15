@@ -5,32 +5,25 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY
 );
 
-// Helper: generate random 6-character code
 function generateCode(length = 6) {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let code = '';
-  for (let i = 0; i < length; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return code;
+  return Array.from({ length }, () =>
+    chars[Math.floor(Math.random() * chars.length)]
+  ).join('');
 }
 
-export async function handler(event) {
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: 'Method Not Allowed' }),
-    };
-  }
-
+export const handler = async (event) => {
   try {
+    if (event.httpMethod !== 'POST') {
+      return { statusCode: 405, body: 'Method Not Allowed' };
+    }
+
     const { longUrl } = JSON.parse(event.body);
 
     if (!longUrl) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing longUrl' }) };
+      return { statusCode: 400, body: 'Missing longUrl' };
     }
 
-    // Generate a unique short code
     let shortCode;
     let exists = true;
 
@@ -42,28 +35,23 @@ export async function handler(event) {
         .eq('short_code', shortCode)
         .limit(1);
 
-      exists = data.length > 0;
+      exists = data?.length > 0;
     }
 
-    // Insert into Supabase
     const { error } = await supabase
       .from('urls')
       .insert([{ original_url: longUrl, short_code: shortCode }]);
 
-    if (error) {
-      console.error(error);
-      return { statusCode: 500, body: JSON.stringify({ error: 'Database insert failed' }) };
-    }
-
-    // Construct full short URL
-    const shortUrl = `${process.env.SITE_URL}/r/${shortCode}`;
+    if (error) throw error;
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ shortUrl }),
+      body: JSON.stringify({
+        shortUrl: `${process.env.SITE_URL}/r/${shortCode}`
+      })
     };
   } catch (err) {
-    console.error(err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Server error' }) };
+    console.error('FUNCTION ERROR:', err);
+    return { statusCode: 500, body: 'Internal Server Error' };
   }
-}
+};
